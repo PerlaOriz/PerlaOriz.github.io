@@ -1,0 +1,38 @@
+.comando{
+    background-color: black ; 
+
+    color: rgb(153, 255, 0);
+}
+#titulo{
+
+    background-color: rgb(155, 155, 228); color: rgb(226, 217, 217);
+    text-align: center;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+
+}
+
+img
+{
+    height: 20%;
+    width: 20%;
+    object-fit: contain;
+
+
+
+}
+.comando{
+    background-color: black;
+    color: rgb(143, 236, 4);
+
+}
+#tema{
+    text-align: center;
+
+}
+#cuerp{
+    text-align: center;
+    padding-top: 1rem;
+    padding-bottom: 3rem;
+
+}
