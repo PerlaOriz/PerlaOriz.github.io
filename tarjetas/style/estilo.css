@@ -1,0 +1,67 @@
+body{
+
+background-color: rgb(204, 207, 206);
+
+}
+.holamundo{
+     
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 2rem;
+    color: rgb(75, 141, 185);
+
+
+
+}
+#identificador{
+
+background-color: chocolate;
+
+}
+#tacos{
+
+background-color: red;
+border-color: red;
+}
+#pasta{
+
+background-color: rgb(230, 170, 98);
+border-color:rgb(230, 170, 98) ;
+
+}
+#ensalada{
+
+background-color: rgb(149, 199, 75);
+border-color: rgb(149, 199, 75);
+}
+#mole{
+
+background-color: chocolate;
+border-color: chocolate;
+}
+#tacos:hover{
+
+background-color: brown;
+color: rgb(175, 148, 148);
+border-color: brown;
+}
+#pasta:hover{
+
+    background-color:coral;
+     color: rgb(240, 189, 170);
+     border-color: coral;
+    }
+    #ensalada:hover{
+
+        background-color:green;
+        color: rgb(161, 209, 161);
+        border-color: green;
+        
+        }
+
+    #mole:hover{
+
+            background-color: rgb(95, 57, 57);
+            color: rgb(167, 138, 138);
+            border-color:rgb(95, 57, 57) ;
+            
+      }
