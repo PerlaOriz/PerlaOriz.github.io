@@ -1,0 +1,54 @@
+#titulo{
+
+    background-color: rgb(198, 243, 241); color: chocolate;
+    text-align: center;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+
+}
+
+
+
+img
+{
+    height: 10%;
+    width: 10%;
+    object-fit: contain;
+
+
+
+}
+
+#table{
+
+
+border: 2px  rgb(255, 203, 135) solid;
+background-color: aquamarine;
+border-collapse: collapse;
+margin-left: auto;
+margin-right: auto;
+
+}
+#table th,#table td{
+
+border: 2px solid rgb(255, 203, 135) ;
+padding: 8px;
+
+
+}
+body{
+
+
+
+    background-color: rgb(240, 240, 180);
+}
+
+
+button{
+
+background-color: aqua;
+border: 1px cornflowerblue;
+
+
+
+}
