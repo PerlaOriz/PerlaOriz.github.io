@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script src="https://unpkg.com/gojs@2.3.16/release/go.js"></script>
+
+<h1>Series y peliculas que he visto </h1>
+<p>Acontinuacion  presentare las series que he visto  en linea temporal</p>
+
+<br>
+<p> Las lineas representas lo que detono que viera una u otra </p>
+
+<div id="allSampleContent" class="p-4 w-full">
+<script id="code">
+class WheelLayout extends go.CircularLayout {
+  // override makeNetwork to set the diameter of each node and ignore the TextBlock label
+  makeNetwork(coll) {
+    const net = super.makeNetwork(coll);
+    net.vertexes.each(cv => cv.diameter = 20);  // because our desiredSize for nodes is (20, 20)
+    return net;
+  }
+
+  // override commitNodes to rotate nodes so the text goes away from the center,
+  // and flip text if it would be upside-down
+  commitNodes() {
+    super.commitNodes();
+    this.network.vertexes.each(v => {
+      const node = v.node;
+      if (node === null) return;
+      // get the angle of the node towards the center, and rotate it accordingly
+      const a = v.actualAngle;
+      if (a > 90 && a < 270) {  // make sure the text isn't upside down
+        const textBlock = node.findObject("TEXTBLOCK");
+        textBlock.angle = 180;
+      }
+      node.angle = a;
+    });
+  }
+
+  // override commitLinks in order to make sure all of the Bezier links are "inside" the ellipse;
+  // this helps avoid links crossing over any other nodes
+  commitLinks() {
+    super.commitLinks();
+    if (this.network.vertexes.count > 4) {
+      this.network.vertexes.each(v => {
+        v.destinationEdges.each(de => {
+          const dv = de.toVertex;
+          let da = dv.actualAngle;
+          let sa = v.actualAngle;
+          if (da - sa > 180) da -= 360;
+          else if (sa - da > 180) sa -= 360;
+          de.link.curviness = (sa > da) ? 15 : -15;
+        })
+      })
+    }
+  }
+}
+// end WheelLayout class
+
+
+  const highlightColor = "red";  // color parameterization
+
+  function init() {
+
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      new go.Diagram("myDiagramDiv", // must be the ID or reference to div
+        {
+          initialAutoScale: go.Diagram.Uniform,
+          padding: 10,
+          contentAlignment: go.Spot.Center,
+          layout:
+            $(WheelLayout,  // set up a custom CircularLayout
+              // set some properties appropriate for this sample
+              {
+                arrangement: go.CircularLayout.ConstantDistance,
+                nodeDiameterFormula: go.CircularLayout.Circular,
+                spacing: 10,
+                aspectRatio: 0.7,
+                sorting: go.CircularLayout.Optimized
+              }),
+          isReadOnly: true,
+          click: e => {  // background click clears any remaining highlighteds
+            e.diagram.startTransaction("clear");
+            e.diagram.clearHighlighteds();
+            e.diagram.commitTransaction("clear");
+          }
+        });
+
+    // define the Node template
+    myDiagram.nodeTemplate =
+      $(go.Node, "Horizontal",
+        {
+          selectionAdorned: false,
+          locationSpot: go.Spot.Center,  // Node.location is the center of the Shape
+          locationObjectName: "SHAPE",
+          mouseEnter: (e, node) => {
+            node.diagram.clearHighlighteds();
+            node.linksConnected.each(l => highlightLink(l, true));
+            node.isHighlighted = true;
+            const tb = node.findObject("TEXTBLOCK");
+            if (tb !== null) tb.stroke = highlightColor;
+          },
+          mouseLeave: (e, node) => {
+            node.diagram.clearHighlighteds();
+            const tb = node.findObject("TEXTBLOCK");
+            if (tb !== null) tb.stroke = "black";
+          }
+        },
+        new go.Binding("text", "text"),  // for sorting the nodes
+        $(go.Shape, "Ellipse",
+          {
+            name: "SHAPE",
+            fill: "lightgray",  // default value, but also data-bound
+            stroke: "transparent",  // modified by highlighting
+            strokeWidth: 2,
+            desiredSize: new go.Size(20, 20),
+            portId: ""
+          },  // so links will go to the shape, not the whole node
+          new go.Binding("fill", "color"),
+          new go.Binding("stroke", "isHighlighted",
+                         h => h ? highlightColor : "transparent")
+            .ofObject()),
+        $(go.TextBlock,
+          { name: "TEXTBLOCK" },  // for search
+          new go.Binding("text", "text"))
+      );
+
+    function highlightLink(link, show) {
+      link.isHighlighted = show;
+      link.fromNode.isHighlighted = show;
+      link.toNode.isHighlighted = show;
+    }
+
+    // define the Link template
+    myDiagram.linkTemplate =
+      $(go.Link,
+        {
+          routing: go.Link.Normal,
+          curve: go.Link.Bezier,
+          selectionAdorned: false,
+          mouseEnter: (e, link) => highlightLink(link, true),
+          mouseLeave: (e, link) => highlightLink(link, false)
+        },
+        $(go.Shape,
+          new go.Binding("stroke", "isHighlighted",
+                         (h, shape) => h ? highlightColor : shape.part.data.color)
+            .ofObject(),
+          new go.Binding("strokeWidth", "isHighlighted",
+                         h => h ? 2 : 1)
+            .ofObject())
+        // no arrowhead -- assume directionality of relationship need not be shown
+      );
+
+    generateGraph();
+  }
+
+  function generateGraph() {
+    const names = [
+      "The Walking dead 2010", "Fear The Walking Dead 2014", "Yo nunca 2021", "The Umbrella Academy 2018", "Greys Anathomy 2006",
+      "A Todos los chicos de los que me enamore 2020", "La Ley Y El Orden 2006", "Insasiable 2021", "A dos metros de ti 2022", "Sex And The City 2000",
+      "American Horror Story 2010", "Story crimen 2015", "Trece razones 2018", "Rick Y Morty 2018", "The Big Bang Theory 2012",
+      "Breacking Bad 2010", "Gabriels 2015", "Servant 2023", "Siren 2022", "I Am Simon2018 ",
+      "Chicas Pesadas 2006", "La Gloria 2020", "Olivia Y Popeye 2000", "The Vampire Days 2003", "Anne Width And E 2013",
+      "El Cadaver De La Novia 2013", "Lindas Mentirosas 2012", "La Princesa Y El Sapo 1999 ", "Elena 2015", "El Excorcista 1999",
+      "Dexter 2004", "You 2020", "Gosip Girld 2004", "Bridgerton 2021", "Riveralde 2015",
+      "Flash 2007", "Grace 1999", "Los 100 2013", "Dhamer 2022", "Lucifer 2015",
+      "Mnifiesto 2021", "Dinastia 2018", "Hannah Montana 2003", "Merlina 2021", "Sabrina 2019",
+      "Dr House 2005", "Desde Cero 2014", "Atypical 2020", "Selena 2022", "Woo 2023",
+      "Aun Asi 2013", "Juliana 2021", "Love Alarm 2019", "Maze Runner 2015", "Control Z 2021",
+      "Victorius 2016", "iCarly 2014", "Sam Y Cat 2018", "Anonima 2019", "Smallville 2005",
+    ];
+
+    const nodeDataArray = [];
+    for (let i = 0; i < names.length; i++) {
+      nodeDataArray.push({ key: i, text: names[i], color: go.Brush.randomColor(128, 240) });
+    }
+
+    const linkDataArray = [];
+    const num = nodeDataArray.length;
+    for (let i = 0; i < num * 2; i++) {
+      const a = Math.floor(Math.random() * num);
+      const b = Math.floor(Math.random() * num / 4) + 1;
+      linkDataArray.push({ from: a, to: (a + b) % num, color: go.Brush.randomColor(0, 127) });
+    }
+
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+<div id="myDiagramDiv" style="border: 1px solid black; background: white; width: 100%; height: 600px; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0); cursor: auto;"><canvas tabindex="0" width="1067" height="747" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 854px; height: 598px; cursor: auto;"></canvas><div style="position: absolute; overflow: auto; width: 854px; height: 598px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
+</body>
+</html>
