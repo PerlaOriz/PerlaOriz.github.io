@@ -1,0 +1,22 @@
+#titulo{
+
+
+    text-align: center;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+
+}
+img
+{
+height: 20%;
+width: 20%;
+object-fit: contain;
+
+
+
+}
+body{
+
+    background-color: rgb(245, 245, 245);
+    
+    }
