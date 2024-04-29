@@ -1,0 +1,212 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+  <body>
+
+    <h1> Diagrama de MMU en GoJS</h1>
+    <h3>Perla Esmeralda Ortiz Reyes      211709</h3>
+  <script src="https://unpkg.com/gojs@3.0.1/release/go.js"></script>
+  
+  <div id="allSampleContent" class="p-4 w-full">
+          
+            
+            
+
+<script id="code">
+  function init() {
+    // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+    // For details, see https://gojs.net/latest/intro/buildingObjects.html
+    const $ = go.GraphObject.make; // for conciseness in defining templates
+
+    myDiagram = new go.Diagram('myDiagramDiv', {
+      validCycle: go.CycleMode.NotDirected, // don't allow loops
+      // For this sample, automatically show the state of the diagram's model on the page
+      ModelChanged: (e) => {
+        if (e.isTransactionFinished) ;//showModel();
+      },
+      'undoManager.isEnabled': true,
+    });
+
+    // This template is a Panel that is used to represent each item in a Panel.itemArray.
+    // The Panel is data bound to the item object.
+    var fieldTemplate = $(go.Panel,
+      'TableRow', // this Panel is a row in the containing Table
+      new go.Binding('portId', 'name'), // this Panel is a "port"
+      {
+        background: 'transparent', // so this port's background can be picked by the mouse
+        fromSpot: go.Spot.Right, // links only go from the right side to the left side
+        toSpot: go.Spot.Left,
+        // allow drawing links from or to this port:
+        fromLinkable: true,
+        toLinkable: true,
+      },
+      $(go.Shape,
+        {
+          width: 12,
+          height: 12,
+          column: 0,
+          strokeWidth: 2,
+          margin: 4,
+          // but disallow drawing links from or to this shape:
+          fromLinkable: false,
+          toLinkable: false,
+        },
+        new go.Binding('figure', 'figure'),
+        new go.Binding('fill', 'color')
+      ),
+      $(go.TextBlock,
+        {
+          margin: new go.Margin(0, 5),
+          column: 1,
+          font: 'bold 13px sans-serif',
+          alignment: go.Spot.Left,
+          // and disallow drawing links from or to this text:
+          fromLinkable: false,
+          toLinkable: false,
+        },
+        new go.Binding('text', 'name')
+      ),
+      $(go.TextBlock, { margin: new go.Margin(0, 5), column: 2, font: '13px sans-serif', alignment: go.Spot.Left }, new go.Binding('text', 'info'))
+    );
+
+    // This template represents a whole "record".
+    myDiagram.nodeTemplate = $(go.Node,
+      'Auto',
+      { copyable: false, deletable: false },
+      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      // this rectangular shape surrounds the content of the node
+      $(go.Shape, { fill: '#EEEEEE' }),
+      // the content consists of a header and a list of items
+      $(go.Panel,
+        'Vertical',
+        // this is the header for the whole node
+        $(go.Panel,
+          'Auto',
+          { stretch: go.Stretch.Horizontal }, // as wide as the whole node
+          $(go.Shape, { fill: '#1570A6', stroke: null }),
+          $(go.TextBlock,
+            {
+              alignment: go.Spot.Center,
+              margin: 3,
+              stroke: 'white',
+              textAlign: 'center',
+              font: 'bold 12pt sans-serif',
+            },
+            new go.Binding('text', 'key')
+          )
+        ),
+        // this Panel holds a Panel for each item object in the itemArray;
+        // each item Panel is defined by the itemTemplate to be a TableRow in this Table
+        $(go.Panel,
+          'Table',
+          {
+            padding: 2,
+            minSize: new go.Size(100, 10),
+            defaultStretch: go.Stretch.Horizontal,
+            itemTemplate: fieldTemplate,
+          },
+          new go.Binding('itemArray', 'fields')
+        ) // end Table Panel of items
+      ) // end Vertical Panel
+    ); // end Node
+
+    myDiagram.linkTemplate = $(go.Link,
+      {
+        relinkableFrom: true,
+        relinkableTo: true, // let user reconnect links
+        toShortLength: 4,
+        fromShortLength: 2,
+      },
+      $(go.Shape, { strokeWidth: 1.5 }),
+      $(go.Shape, { toArrow: 'Standard', stroke: null })
+    );
+
+    myDiagram.model = new go.GraphLinksModel({
+      copiesArrays: true,
+      copiesArrayObjects: true,
+      linkFromPortIdProperty: 'fromPort',
+      linkToPortIdProperty: 'toPort',
+      nodeDataArray: [
+        {
+          key: 'Espacio de direcciones virtuales',
+          fields: [
+          { name: 'fieldDiophs', info: 'X', color: '#00BCF2', figure: 'Rectangle' },
+            { name: 'lsokskncjk', info: 'X', color: '#00BCF2', figure: 'circle' },
+            { name: 'fieldDyskn', info: 'X', color: '#00BCF2', figure: 'diamond' },
+            { name: 'fieldDlaja', info: 'X', color: '#00BCF2', figure: 'Rectangle' },
+            { name: 'fieldDjxkh', info: '7', color: '#FF5733', figure: 'circle' },
+            { name: 'fieldDppsp', info: 'X', color: '#00BCF2', figure: 'diamond' },
+            { name: 'fieldDpaps', info: '5', color: '#187FE5', figure: 'Rectangle' },
+            { name: 'fieldDjsod', info: 'X', color: '#00BCF2', figure: 'circle' },
+            { name: 'fieldDpsks', info: 'X', color: '#00BCF2', figure: 'diamond' },
+            { name: 'fieldDpjsb', info: 'X', color: '#00BCF2', figure: 'Rectangle' },
+            { name: 'fiedhhdDjx', info: '3', color: '#E28953', figure: 'circle' },
+            { name: 'fieldnjdsb', info: '4', color: '#7FA976', figure: 'diamond' },
+            { name: 'fiksakdald', info: '0', color: '#DA98B2', figure: 'Rectangle' },
+            { name: 'fieldDjshh', info: '6', color: '#18E56C', figure: 'circle' },
+            { name: 'fiwefueldD', info: '1', color: '#F020F7', figure: 'diamond' },
+            { name: 'fieldddggd', info: '2', color: '#F7CD20', figure: 'Rectangle' }
+            
+          ],
+          loc: '0 0',
+        },
+        {
+          key: 'Direccion de memoria fisica',
+          fields: [
+            
+
+            { name: '1', info: 'sjjsja', color: '#FF5733', figure: 'circle' },
+            { name: '2', info: 'hasjsl', color: '#18E56C', figure: 'circle' },
+            { name: '3', info: 'oskisa', color: '#187FE5', figure: 'Rectangle' },
+            { name: '4', info: 'osaysv', color: '#7FA976', figure: 'diamond' },
+            { name: '5', info: 'pltevm', color: '#E28953', figure: 'circle' },
+            { name: '6', info: 'pretyl', color: '#F7CD20', figure: 'Rectangle' },
+            { name: '7', info: 'porvuo', color: '#F020F7', figure: 'diamond' },
+            { name: '8', info: 'pornhl', color: '#DA98B2', figure: 'Rectangle' },
+            
+            
+
+            
+
+
+
+
+
+
+
+
+          ],
+          loc: '280 0',
+        },
+      ],
+      linkDataArray: [
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fieldDjxkh', to: 'Direccion de memoria fisica', toPort: '1' },
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fieldDjshh', to: 'Direccion de memoria fisica', toPort: '2' },
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fieldDpaps', to: 'Direccion de memoria fisica', toPort: '3' },
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fieldnjdsb', to: 'Direccion de memoria fisica', toPort: '4' },
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fiedhhdDjx', to: 'Direccion de memoria fisica', toPort: '5' },
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fieldddggd', to: 'Direccion de memoria fisica', toPort: '6' },
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fiwefueldD', to: 'Direccion de memoria fisica', toPort: '7' },
+        { from: 'Espacio de direcciones virtuales', fromPort: 'fiksakdald', to: 'Direccion de memoria fisica', toPort: '8' },
+
+
+      ],
+    });
+
+   // showModel(); // show the diagram's initial model
+
+   // function showModel() {
+   //  document.getElementById('mySavedModel').textContent = myDiagram.model.toJson();
+ //  }
+  }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+
+<div id="sample">
+  <div id="myDiagramDiv" style="border: 1px solid black; width: 100%; height: 300px; position: relative; -webkit-tap-highlight-color: rgba(189, 100, 100, 0);"><canvas tabindex="0" width="1246" height="298" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1246px; height: 298px;"></canvas><div style="position: absolute; overflow: auto; width: 1246px; height: 298px; z-index: 1;"><div style="position: absolute; width: 1px; height: 1px;"></div></div></div>
+ 
+  </div>
+
+          
+  </body>
+  </html>
